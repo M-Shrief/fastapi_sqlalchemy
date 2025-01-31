@@ -19,15 +19,15 @@ router = APIRouter(tags=["Users"])
 async def signup(user: schema.UserSignupReq, db: AsyncSession = Depends(get_db)):
     new_user = User(**user.model_dump())
     try: 
-        print(new_user.name, new_user.password, new_user.roles)
         db.add(new_user)
-        print("Added")
         await db.commit()
-        print("commited")
         await db.refresh(new_user)
-        print("Refreshed User: ", new_user)
         return new_user
     except Exception as e: ## need effective error handling here
         await db.rollback()
-        print(e)
-        return
+        if "psycopg.errors.UniqueViolation" in str(e):
+            detail_msg = "Name's already taken"
+            raise HTTPException(status.HTTP_409_CONFLICT, detail=detail_msg)
+        else:
+            detail_msg = "An error occurred while signing up"
+            raise HTTPException(status.HTTP_406_NOT_ACCEPTABLE, detail=detail_msg)
