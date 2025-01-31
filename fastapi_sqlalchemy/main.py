@@ -11,4 +11,4 @@ async def homepage():
     return {"message": "Hello World!"}
 
 
-app.include_router(user_router)
+app.include_router(user_router, prefix="/api")

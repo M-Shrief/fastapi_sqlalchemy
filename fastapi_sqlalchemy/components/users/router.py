@@ -11,7 +11,7 @@ router = APIRouter(tags=["Users"])
 
 
 @router.post(
-    "/api/users",
+    "/users",
     status_code=status.HTTP_201_CREATED,
     response_model=schema.UserSignupRes,
     response_model_exclude_none=True
