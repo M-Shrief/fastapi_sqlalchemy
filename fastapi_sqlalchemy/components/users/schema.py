@@ -20,8 +20,10 @@ class UserSignupReq(User):
     pass
 
 
-class UserSignupRes(User):
+class UserSignupRes(BaseModel):
     id: UUID
+    name: str
+    roles: list[Role]
     # created_at: datetime
     # updated_at: datetime
 

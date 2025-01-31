@@ -11,7 +11,7 @@ router = APIRouter(tags=["Users"])
 
 
 @router.post(
-    "/users",
+    "/users/signup",
     status_code=status.HTTP_201_CREATED,
     response_model=schema.UserSignupRes,
     response_model_exclude_none=True
@@ -32,3 +32,11 @@ async def signup(user: schema.UserSignupReq, db: AsyncSession = Depends(get_db))
         else:
             detail_msg = "An error occurred while signing up"
             raise HTTPException(status.HTTP_406_NOT_ACCEPTABLE, detail=detail_msg)
+
+@router.post(
+    "/users/login",
+    status_code=status.HTTP_202_ACCEPTED,
+    response_model_exclude_none=True
+)
+async def login(user, db: AsyncSession = Depends(get_db)):
+    pass
