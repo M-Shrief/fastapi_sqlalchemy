@@ -27,3 +27,12 @@ class UserSignupRes(BaseModel):
     # created_at: datetime
     # updated_at: datetime
 
+
+class UserLoginReq(BaseModel):
+    name: str
+    password: str
+
+class UserLoginRes(BaseModel):
+    id: UUID
+    name: str
+    roles: list[Role]
