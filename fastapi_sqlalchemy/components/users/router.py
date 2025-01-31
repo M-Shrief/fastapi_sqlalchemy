@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi_sqlalchemy.components.users import schema
 from fastapi_sqlalchemy.database.index import get_db
 from fastapi_sqlalchemy.database.models import User
-
+from fastapi_sqlalchemy.utils.auth import hash_password
 
 router = APIRouter(tags=["Users"])
 
@@ -18,6 +18,7 @@ router = APIRouter(tags=["Users"])
     )
 async def signup(user: schema.UserSignupReq, db: AsyncSession = Depends(get_db)):
     new_user = User(**user.model_dump())
+    new_user.password = hash_password(new_user.password)
     try: 
         db.add(new_user)
         await db.commit()
