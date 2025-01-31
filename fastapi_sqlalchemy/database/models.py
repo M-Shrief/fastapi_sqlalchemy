@@ -5,6 +5,8 @@ from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 
 from datetime import datetime
 from uuid import UUID
+###
+from fastapi_sqlalchemy.components.users.schema import Role
 
 class Base(DeclarativeBase):
     """Base class for SQLAlchemy models."""
@@ -30,7 +32,7 @@ class User(Base, Timestamps):
     id: Mapped[UUID] = Column(PG_UUID(as_uuid=True), server_default=text("gen_random_uuid()"), primary_key=True)
     name: Mapped[str] = Column(String(length=128), nullable=False, unique=True)
     password: Mapped[str] = Column(String(length=128), nullable=False)
-    roles = Column(ARRAY(role), nullable=True)
+    roles: Mapped[list[Role]] = Column(ARRAY(Enum(Role,name='role',native_enum=True)), nullable=True)
 
 
 

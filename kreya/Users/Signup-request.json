@@ -1,0 +1,5 @@
+{
+  "name": "test5",
+  "password": "p@ssword1",
+  "roles": ["DBA"]
+}
