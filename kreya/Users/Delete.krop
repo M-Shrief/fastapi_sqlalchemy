@@ -1,0 +1,15 @@
+{
+  "details": {
+    "path": "/api/users/433cb4e2-90ae-43e2-bea3-731c8041afb1",
+    "method": "DELETE",
+    "pathParams": []
+  },
+  "requests": [
+    {
+      "contentType": "none"
+    }
+  ],
+  "operationType": "unary",
+  "invokerName": "rest",
+  "typeHint": "DELETE"
+}

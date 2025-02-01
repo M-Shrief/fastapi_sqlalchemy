@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException, status, Depends, Request
+from fastapi import APIRouter, HTTPException, status, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, delete
+from uuid import UUID
 ###
 from fastapi_sqlalchemy.components.users import schema
 from fastapi_sqlalchemy.database.index import get_db
@@ -70,7 +71,7 @@ async def login(user: schema.UserLoginReq, db: AsyncSession = Depends(get_db)):
     response_model=schema.UserUpdateRes,
     response_model_exclude_none=True,
 )
-async def update(new_user_data: schema.UserUpdateReq, id: str, db: AsyncSession = Depends(get_db)):
+async def update_user(new_user_data: schema.UserUpdateReq, id: str, db: AsyncSession = Depends(get_db)):
     try:
         hashed_password: str = ""
         if new_user_data.password is not None:
@@ -101,3 +102,17 @@ async def update(new_user_data: schema.UserUpdateReq, id: str, db: AsyncSession 
         print(e)
         detail_msg = "An error occurred while updating the user, try again later."
         raise HTTPException(status.HTTP_400_BAD_REQUEST, detail=detail_msg)
+
+@router.delete(
+    "/users/{id}",
+    status_code=status.HTTP_202_ACCEPTED,
+    response_model=schema.UserDeleteReq,
+    response_model_exclude_none=True,
+)
+async def delete_user(id: UUID, db: AsyncSession = Depends(get_db)):
+    
+    stmt = delete(User).where(User.id == id)
+    await db.execute(statement=stmt)
+    await db.commit()
+
+    return schema.UserDeleteRes()

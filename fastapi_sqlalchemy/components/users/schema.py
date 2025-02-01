@@ -44,3 +44,9 @@ class UserUpdateReq(BaseModel):
 
 class UserUpdateRes(BaseModel):
     pass
+
+class UserDeleteReq(BaseModel):
+    pass
+
+class UserDeleteRes(BaseModel):
+    pass
