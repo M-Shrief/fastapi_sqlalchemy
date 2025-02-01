@@ -32,7 +32,7 @@ async def signup(user: schema.UserSignupReq, db: AsyncSession = Depends(get_db))
             detail_msg = "Name's already taken"
             raise HTTPException(status.HTTP_409_CONFLICT, detail=detail_msg)
         else:
-            detail_msg = "An error occurred while signing up"
+            detail_msg = "An error occurred while signing up, try again later."
             raise HTTPException(status.HTTP_406_NOT_ACCEPTABLE, detail=detail_msg)
 
 @router.post(
@@ -42,22 +42,23 @@ async def signup(user: schema.UserSignupReq, db: AsyncSession = Depends(get_db))
     response_model_exclude_none=True
 )
 async def login(user: schema.UserLoginReq, db: AsyncSession = Depends(get_db)):
-    # try:
+    try:
         stmt = select(User).where(User.name == user.name) ## need to select required fields only.
         res =  await db.execute(statement=stmt)
         existing_user: User = res.scalar()
+    except Exception:
+        detail_msg = "An error occurred while loggin in, try again later."
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, detail=detail_msg)
 
-        if existing_user:
 
-            if verify_password(user.password, existing_user.password) is False:
-                raise HTTPException(status.HTTP_406_NOT_ACCEPTABLE, detail="User's Password is incorrect.")
+    base_err = "User's name or password is incorrect."
+    if existing_user: # User exist in DB
 
-            return existing_user
+        if verify_password(user.password, existing_user.password) is False:
+            raise HTTPException(status.HTTP_406_NOT_ACCEPTABLE, detail=base_err)
 
-        else:
-            raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User's Not Found")
-    # except Exception as e:
-    #     if existing_user is None:
-    #         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User's Not Found")
-    #     detail_msg = "An error occurred while signing up"
-    #     raise HTTPException(status.HTTP_406_NOT_ACCEPTABLE, detail=detail_msg)
+        return existing_user
+
+    else:
+        # User doesn't exist
+        raise HTTPException(status.HTTP_406_NOT_ACCEPTABLE, detail=base_err)

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.engine import URL 
 #####
 from fastapi_sqlalchemy.config import DB
@@ -19,7 +19,7 @@ db_url = URL.create(
 
 engine = create_async_engine(db_url)
 
-SessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=engine)
+AsyncSessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -29,8 +29,8 @@ async def lifespan(app: FastAPI):
     yield
 
 # Dependency
-async def get_db():
-    db = SessionLocal()
+async def get_db() -> AsyncSession:
+    db = AsyncSessionLocal()
     try:
         yield db
     finally:
