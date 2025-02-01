@@ -71,7 +71,7 @@ async def login(user: schema.UserLoginReq, db: AsyncSession = Depends(get_db)):
     response_model=schema.UserUpdateRes,
     response_model_exclude_none=True,
 )
-async def update_user(new_user_data: schema.UserUpdateReq, id: str, db: AsyncSession = Depends(get_db)):
+async def update_user(new_user_data: schema.UserUpdateReq, id: UUID, db: AsyncSession = Depends(get_db)):
     try:
         hashed_password: str = ""
         if new_user_data.password is not None:
