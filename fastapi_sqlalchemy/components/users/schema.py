@@ -36,3 +36,11 @@ class UserLoginRes(BaseModel):
     id: UUID
     name: str
     roles: list[Role]
+
+class UserUpdateReq(BaseModel):
+    name: str | None = None
+    password: str | None = None
+    roles: list[Role] | None = None
+
+class UserUpdateRes(BaseModel):
+    pass

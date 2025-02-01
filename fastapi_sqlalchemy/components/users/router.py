@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 ###
@@ -62,3 +62,42 @@ async def login(user: schema.UserLoginReq, db: AsyncSession = Depends(get_db)):
     else:
         # User doesn't exist
         raise HTTPException(status.HTTP_406_NOT_ACCEPTABLE, detail=base_err)
+
+
+@router.put(
+    "/users/{id}",
+    status_code=status.HTTP_202_ACCEPTED,
+    response_model=schema.UserUpdateRes,
+    response_model_exclude_none=True,
+)
+async def update(new_user_data: schema.UserUpdateReq, id: str, db: AsyncSession = Depends(get_db)):
+    try:
+        hashed_password: str = ""
+        if new_user_data.password is not None:
+            hashed_password = hash_password(new_user_data.password)
+
+        stmt = select(User).where(User.id == id) 
+        res =  await db.execute(statement=stmt)
+        existing_user: User = res.scalar()
+
+        if existing_user: # User exist in DB
+
+            if new_user_data.name is not None:
+                existing_user.name = new_user_data.name
+
+            if new_user_data.password is not None:
+                hashed_password = hash_password(new_user_data.password)
+                existing_user.password = hashed_password
+
+            if new_user_data.roles is not None:
+                existing_user.roles = new_user_data.roles
+
+            await db.commit()
+            return schema.UserUpdateRes()
+        else:
+            # User doesn't exist
+            raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User doesn't exists")
+    except Exception as e:
+        print(e)
+        detail_msg = "An error occurred while updating the user, try again later."
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, detail=detail_msg)
