@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException, status, Depends, Header
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
-from uuid import UUID
 from typing import Annotated
 ###
 from fastapi_sqlalchemy.components.users import schema
@@ -27,7 +26,10 @@ async def signup(user: schema.UserSignupReq, db: AsyncSession = Depends(get_db))
         db.add(new_user)
         await db.commit()
         await db.refresh(new_user)
-        return new_user
+
+        user = schema.UserBaseRes(id=new_user.id, name=new_user.name, roles=new_user.roles)
+        access_token = create_jwt(user)
+        return schema.UserSignupRes(user=user, access_token=access_token)
     except Exception as e: ## need effective error handling here
         await db.rollback()
         if "psycopg.errors.UniqueViolation" in str(e):

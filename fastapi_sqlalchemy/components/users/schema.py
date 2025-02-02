@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from datetime import datetime
+# from datetime import datetime
 from enum import Enum
 from uuid import UUID
 # from typing import Any
@@ -21,20 +21,13 @@ class UserBaseRes(BaseModel):
     name: str
     roles: list[Role]
 
-# class JWTPayload(BaseModel):
-#     user: UserBaseRes
-#     exp: datetime
-#     iat: datetime
-#     permission: list[str]
-
 class UserSignupReq(User):
     pass
 
 
 class UserSignupRes(BaseModel):
-    id: UUID
-    name: str
-    roles: list[Role]
+    user: UserBaseRes
+    access_token: str
     # created_at: datetime
     # updated_at: datetime
 
