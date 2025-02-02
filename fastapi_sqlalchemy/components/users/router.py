@@ -6,7 +6,7 @@ from uuid import UUID
 from fastapi_sqlalchemy.components.users import schema
 from fastapi_sqlalchemy.database.index import get_db
 from fastapi_sqlalchemy.database.models import User
-from fastapi_sqlalchemy.utils.auth import hash_password, verify_password, create_access_token, verify_access_token
+from fastapi_sqlalchemy.utils.auth import hash_password, verify_password, create_jwt
 
 
 router = APIRouter(tags=["Users"])
@@ -60,7 +60,7 @@ async def login(user: schema.UserLoginReq, db: AsyncSession = Depends(get_db)):
 
         
         user = schema.UserBaseRes(id=existing_user.id, name=existing_user.name, roles=existing_user.roles)
-        access_token = create_access_token(user)
+        access_token = create_jwt(user)
         return schema.UserLoginRes(user=user, access_token=access_token)
 
     else:
