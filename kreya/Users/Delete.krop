@@ -1,7 +1,13 @@
 {
   "details": {
-    "path": "/api/users/433cb4e2-90ae-43e2-bea3-731c8041afb1",
+    "path": "/api/users/me",
     "method": "DELETE",
+    "headers": [
+      {
+        "key": "Authorization",
+        "value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiYTlhOGVmNGQtNmVmNS00YmZiLWIxOTQtNGJiYTE1NDA4ZTM5IiwibmFtZSI6InRlc3QxIiwicm9sZXMiOlsiREJBIl19LCJwZXJtaXNzaW9ucyI6WyJEQkE6cmVhZCIsIkRCQTp3cml0ZSJdLCJpYXQiOjE3Mzg1MTM1NTUsImV4cCI6MTczODUyMDc1NX0.U1ONajpkSP72ASs8t2ByVn3WXI8y92QGYeCn7Sis135FY_ATj0iI6gcnAEYyu1UGb0LmgEsEq96Esig9yRTVeHTQZFN7JyRMbleo51vhIHDRAR3urNOoKyKoWSxYeZLmFMXJpqotwX-lg70Zxy7in7fccrq7yH1kVHNlp0SOIwBltX3xxaO1bAp0R4emZP3t4y3RhAbd-o9LlKEgIEF940mgtjzRVwByPTP99CfUsCnAJopNuAl22C767pdwrzxuev6YhRGCyQi5eQTg_4MkIV5ZFWp9rTe-tuVxQhAn2Jl7MNBic04ahqxg1BjIzGVytKlNnTcdwJijey4IWpmheA"
+      }
+    ],
     "pathParams": []
   },
   "requests": [

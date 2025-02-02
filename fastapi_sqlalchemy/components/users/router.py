@@ -119,14 +119,25 @@ async def update_user(new_user_data: schema.UserUpdateReq, Authorization: Annota
         raise HTTPException(status.HTTP_400_BAD_REQUEST, detail=detail_msg)
 
 @router.delete(
-    "/users/{id}",
+    "/users/me",
     status_code=status.HTTP_202_ACCEPTED,
     response_model=schema.UserDeleteReq,
     response_model_exclude_none=True,
 )
-async def delete_user(id: UUID, db: AsyncSession = Depends(get_db)):
+async def delete_user(Authorization: Annotated[str | None, Header()] = None, db: AsyncSession = Depends(get_db)):
+    only_authorized_for: list[str] = [
+        schema.Role.DBA + ":write",
+        schema.Role.Management + ":write",
+        schema.Role.Analytics + ":write"
+    ]
+
+    payload, verified = verify_jwt(authorization_header=Authorization, only_authorized_for=only_authorized_for)
+    if verified is False:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Action Not Authorized")
     
-    stmt = delete(User).where(User.id == id)
+    user = payload["user"] # getting user data from payload
+    
+    stmt = delete(User).where(User.id == user["id"])
     await db.execute(statement=stmt)
     await db.commit()
 
