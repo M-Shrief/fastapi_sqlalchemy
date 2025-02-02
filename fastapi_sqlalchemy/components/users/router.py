@@ -1,12 +1,13 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, Header
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
 from uuid import UUID
+from typing import Annotated
 ###
 from fastapi_sqlalchemy.components.users import schema
 from fastapi_sqlalchemy.database.index import get_db
 from fastapi_sqlalchemy.database.models import User
-from fastapi_sqlalchemy.utils.auth import hash_password, verify_password, create_jwt
+from fastapi_sqlalchemy.utils.auth import hash_password, verify_password, create_jwt, verify_jwt
 
 
 router = APIRouter(tags=["Users"])
@@ -69,18 +70,29 @@ async def login(user: schema.UserLoginReq, db: AsyncSession = Depends(get_db)):
 
 
 @router.put(
-    "/users/{id}",
+    "/users/me",
     status_code=status.HTTP_202_ACCEPTED,
     response_model=schema.UserUpdateRes,
     response_model_exclude_none=True,
 )
-async def update_user(new_user_data: schema.UserUpdateReq, id: UUID, db: AsyncSession = Depends(get_db)):
+async def update_user(new_user_data: schema.UserUpdateReq, Authorization: Annotated[str | None, Header()] = None, db: AsyncSession = Depends(get_db)):
+    only_authorized_for: list[str] = [
+        schema.Role.DBA + ":write",
+        schema.Role.Management + ":write",
+        schema.Role.Analytics + ":write"
+    ]
+
+    payload, verified = verify_jwt(authorization_header=Authorization, only_authorized_for=only_authorized_for)
+    if verified is False:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Action Not Authorized")
+    
+    user = payload["user"] # getting user data from payload
     try:
         hashed_password: str = ""
         if new_user_data.password is not None:
             hashed_password = hash_password(new_user_data.password)
 
-        stmt = select(User).where(User.id == id) 
+        stmt = select(User).where(User.id == user["id"]) 
         res =  await db.execute(statement=stmt)
         existing_user: User = res.scalar()
 
