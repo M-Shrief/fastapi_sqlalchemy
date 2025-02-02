@@ -20,7 +20,6 @@ def create_jwt(user: schema.UserBaseRes)->str:
         "user": {
             "id": str(user.id),
             "name": user.name,
-            "roles": user.roles
             },
         "permissions": permissions
     }
