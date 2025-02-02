@@ -1,11 +1,12 @@
 from pydantic import BaseModel
-# from datetime import datetime
+from datetime import datetime
 from enum import Enum
 from uuid import UUID
+# from typing import Any
 
 ## Note: Limit the use of inheritance, and make schemas as direct as you can.abs
 
-class Role(Enum):
+class Role(str, Enum):
     DBA = 'DBA'
     Analytics = 'Analytics'
     Management = 'Management'
@@ -15,6 +16,16 @@ class User(BaseModel):
     password: str
     roles: list[Role]
 
+class UserBaseRes(BaseModel):
+    id: UUID
+    name: str
+    roles: list[Role]
+
+# class JWTPayload(BaseModel):
+#     user: UserBaseRes
+#     exp: datetime
+#     iat: datetime
+#     permission: list[str]
 
 class UserSignupReq(User):
     pass
@@ -33,9 +44,8 @@ class UserLoginReq(BaseModel):
     password: str
 
 class UserLoginRes(BaseModel):
-    id: UUID
-    name: str
-    roles: list[Role]
+    user: UserBaseRes
+    access_token: str
 
 class UserUpdateReq(BaseModel):
     name: str | None = None

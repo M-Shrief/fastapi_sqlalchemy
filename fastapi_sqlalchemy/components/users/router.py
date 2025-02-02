@@ -6,7 +6,7 @@ from uuid import UUID
 from fastapi_sqlalchemy.components.users import schema
 from fastapi_sqlalchemy.database.index import get_db
 from fastapi_sqlalchemy.database.models import User
-from fastapi_sqlalchemy.utils.auth import hash_password, verify_password
+from fastapi_sqlalchemy.utils.auth import hash_password, verify_password, create_access_token, verify_access_token
 
 
 router = APIRouter(tags=["Users"])
@@ -55,10 +55,13 @@ async def login(user: schema.UserLoginReq, db: AsyncSession = Depends(get_db)):
     base_err = "User's name or password is incorrect."
     if existing_user: # User exist in DB
 
-        if verify_password(user.password, existing_user.password) is False:
+        if verify_password(user.password, existing_user.password) is False: # if password is incorrect.
             raise HTTPException(status.HTTP_406_NOT_ACCEPTABLE, detail=base_err)
 
-        return existing_user
+        
+        user = schema.UserBaseRes(id=existing_user.id, name=existing_user.name, roles=existing_user.roles)
+        access_token = create_access_token(user)
+        return schema.UserLoginRes(user=user, access_token=access_token)
 
     else:
         # User doesn't exist

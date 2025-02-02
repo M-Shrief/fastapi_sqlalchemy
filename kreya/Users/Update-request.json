@@ -1,4 +1,3 @@
 {
-  "name": "Updated_Name2",
-  "password": "p@ssword2"
+  "roles": ["DBA", "Management", "Analytics"]
 }
