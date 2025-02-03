@@ -1,5 +1,5 @@
 {
-  "name": "test2",
+  "name": "test5",
   "password": "p@ssword1",
-  "roles": ["DBA"]
+  "roles": []
 }
