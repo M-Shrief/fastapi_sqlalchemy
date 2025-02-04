@@ -78,6 +78,9 @@ async def login(user: schema.UserLoginReq, db: AsyncSession = Depends(get_db)):
     response_model_exclude_none=True,
 )
 async def update_user(new_user_data: schema.UserUpdateReq, Authorization: Annotated[str | None, Header()] = None, db: AsyncSession = Depends(get_db)):
+    if Authorization is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Action Not Authorized")
+
     only_authorized_for: list[str] = [
         schema.Role.DBA + ":write",
         schema.Role.Management + ":write",
@@ -127,6 +130,9 @@ async def update_user(new_user_data: schema.UserUpdateReq, Authorization: Annota
     response_model_exclude_none=True,
 )
 async def delete_user(Authorization: Annotated[str | None, Header()] = None, db: AsyncSession = Depends(get_db)):
+    if Authorization is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Action Not Authorized")
+
     only_authorized_for: list[str] = [
         schema.Role.DBA + ":write",
         schema.Role.Management + ":write",
