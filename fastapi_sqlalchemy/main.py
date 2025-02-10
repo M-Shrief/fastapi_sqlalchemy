@@ -4,6 +4,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 ###
 from fastapi_sqlalchemy.database.index import lifespan
 from fastapi_sqlalchemy.components.users.router import router as user_router
+from fastapi_sqlalchemy.utils.logger import logger
 
 app = FastAPI(lifespan=lifespan)
 
@@ -24,6 +25,7 @@ app.add_middleware(
 
 @app.get("/")
 async def homepage():
+    logger.info("21412", arr=["aa", "bb"], dic={"name1": "Name1"})
     return {"message": "Hello World!"}
 
 

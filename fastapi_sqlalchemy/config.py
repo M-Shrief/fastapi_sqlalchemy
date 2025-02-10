@@ -2,6 +2,8 @@ from dotenv import dotenv_values
 
 __env = dotenv_values(".env")
 
+ENV = __env.get("ENV")
+
 DB = {
     'user': __env.get("DB_USER"),
     'password': __env.get("DB_PASSWORD"),
